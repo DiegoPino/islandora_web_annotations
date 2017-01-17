@@ -9,6 +9,9 @@ jQuery(document).ready(function() {
 
     preload="none"
 
+    var objectUri = window.location.href;
+    objectUri = objectUri.replace("%3A", ":");
+    objectUri = objectUri.replace("#", "");
 
     var options = {
         optionsAnnotator: {
@@ -18,10 +21,9 @@ jQuery(document).ready(function() {
 
             store: {
                 // The endpoint of the store on your server.
-                //prefix: 'http://afstore.aws.af.cm/annotator',
-                prefix: 'http://danielcebrian.com/annotations/api',
+                prefix: "http://localhost:8000/islandora_web_annotations",
 
-                annotationData: {uri:'http://danielcebrian.com/annotations/demo.html'},
+                annotationData: {uri:objectUri},
 
                 /*urls: {
                  // These are the default URLs.
@@ -32,9 +34,13 @@ jQuery(document).ready(function() {
                  search:  '/search'
                  },*/
 
+                urls: {
+                    create: '/createAnnotationForVideo',
+                },
+
                 loadFromSearch:{
-                    limit:10000,
-                    uri: 'http://danielcebrian.com/annotations/demo.html',
+                    limit:100,
+                    uri: objectUri,
                 }
             },
             richText: {
@@ -57,12 +63,30 @@ jQuery(document).ready(function() {
 
 
     //Load the plugin Open Video Annotation
-    var ova = new OpenVideoAnnotation.Annotator(jQuery("div[class='islandora-video-content']")[0], options);
+    try {
+        ova = new OpenVideoAnnotation.Annotator(jQuery("div[class='islandora-video-content']")[0], options);
+    }
+    catch(e){
+        alert(e)
+    }
 
     //change the user (Experimental)
     ova.setCurrentUser("Nat");
     $('#username').change(function () {
         ova.setCurrentUser($(this).val());
+    });
+
+    ova.annotator.subscribe('annotationViewerShown', function(viewer, annotations){
+        var left = jQuery(".annotator-hl.active").first().find("div").first().css("left");
+        var top = jQuery(".annotator-hl.active").first().find("div").first().css("top");
+        left = left.substr(0, left.length-2);
+        var width = jQuery(".annotator-hl.active").first().find("div").first().width();
+        var newleft = Number(left) + Number(width) / 2;
+
+
+        jQuery(".annotator-viewer").first().css({left:newleft + "px"});
+        jQuery(".annotator-viewer").first().css({top:top});
+
     });
 
 });

@@ -10,6 +10,67 @@ require_once('AnnotationContainer.php');
 
 //ToDo: Need to validate input vars
 
+function getRoot(){
+    $RootInfo = '{ "name": "Islandora Web Annotations", "version": "1.0.0"}';
+    echo $RootInfo;
+    drupal_exit();
+}
+
+function searchForAnnotations(){
+    $targetObjectURI = isset($_GET['uri']) ? $_GET['uri'] : '';
+    $targetObjectID = substr($targetObjectURI, strrpos($targetObjectURI, '/') + 1);
+
+    $oAnnotationContainer = new AnnotationContainer();
+    $output = $oAnnotationContainer->getAnnotationContainer($targetObjectID);
+
+    $annotationData = json_decode($output, true);
+    $items = $annotationData["first"]["items"];
+
+    $arrResult["rows"] = [];
+
+    for($i = 0; $i < count($items); $i++) {
+        array_push(  $arrResult["rows"], $items[$i]);
+    }
+
+    $arrResult["total"] = count($items);
+    $output = json_encode($arrResult);
+
+    watchdog(AnnotationConstants::MODULE_NAME, "Video Annotations - searchForAnnotations " . $output);
+
+    echo $output;
+    drupal_exit();
+}
+
+function createAnnotationForVideo(){
+    $entityBody = file_get_contents('php://input');
+    $annotationData = json_decode($entityBody, true);
+    $uri = $annotationData["uri"];
+    $created = $annotationData["created"];
+
+    $annotationData["context"] = $uri;
+
+    $annotationMetadata["created"] = $created;
+    $annotationMetadata["author"] = "Nat";
+
+    $targetPID = substr($uri, strrpos($uri, '/') + 1);
+
+    $oAnnotationContainer = new AnnotationContainer();
+    $output = $oAnnotationContainer->createAnnotation($targetPID, $annotationData, $annotationMetadata);
+
+    $annotationData = json_decode($output, true);
+
+    $arrResult["rows"] = [];
+    array_push(  $arrResult["rows"], $annotationData);
+    $arrResult["total"] = 1;
+
+    $output = json_encode($arrResult);
+
+    watchdog(AnnotationConstants::MODULE_NAME, "Video Annotations - createAnnotationForVideo " . $output);
+
+    echo $output;
+    drupal_exit();
+}
+
 function createAnnotation(){
     $targetObjectID = null;
     try

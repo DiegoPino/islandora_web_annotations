@@ -66,6 +66,31 @@ function islandora_web_annotations_menu() {
         'type' => MENU_CALLBACK,
     );
 
+    // Begin: Video related routes
+    $items['islandora_web_annotations'] = array(
+        'title' => 'Create Web Annotation',
+        'description' => 'Add a new Web Annotation',
+        'page callback' => 'getRoot',
+        'access callback' => TRUE,
+        'file' => 'includes/AnnotationController.php',
+    );
+
+    $items['islandora_web_annotations/search'] = array(
+        'title' => 'Create Web Annotation',
+        'description' => 'Add a new Web Annotation',
+        'page callback' => 'searchForAnnotations',
+        'access callback' => TRUE,
+        'file' => 'includes/AnnotationController.php',
+    );
+
+    $items['islandora_web_annotations/createAnnotationForVideo'] = array(
+        'title' => 'Create Web Annotation',
+        'description' => 'Add a new Web Annotation',
+        'page callback' => 'createAnnotationForVideo',
+        'access callback' => TRUE,
+        'file' => 'includes/AnnotationController.php',
+    );
+    // End: Video related routes// Begin: Video related routes
     return $items;
 }
 
