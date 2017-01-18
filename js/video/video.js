@@ -78,15 +78,31 @@ jQuery(document).ready(function() {
     });
 
     ova.annotator.subscribe('annotationViewerShown', function(viewer, annotations){
-        var left = jQuery(".annotator-hl.active").first().find("div").first().css("left");
-        var top = jQuery(".annotator-hl.active").first().find("div").first().css("top");
-        left = left.substr(0, left.length-2);
-        var width = jQuery(".annotator-hl.active").first().find("div").first().width();
-        var newleft = Number(left) + Number(width) / 2;
+        if(jQuery(".annotator-hl.active").length > 0) {
+            var left = jQuery(".annotator-hl.active").first().find("div").first().css("left");
+            left = left.substr(0, left.length - 2);
+            var width = jQuery(".annotator-hl.active").first().find("div").first().width();
+            var newleft = Number(left) + Number(width) / 2;
+            jQuery(".annotator-viewer").first().css({left: newleft + "px"});
 
+            var top = jQuery(".annotator-hl.active").first().find("div").first().css("top");
+            top = top.substr(0, top.length - 2);
+            top = Number(top) + 30;
+            jQuery(".annotator-viewer").first().css({top: top + "px"});
+        } else {
+            if(jQuery(".vjs-selectionbar-RS").first().is(":visible") === true) {
+                var left = jQuery(".vjs-selectionbar-RS").first().css("left");
+                left = left.substr(0, left.length - 2);
+                var width = jQuery(".vjs-selectionbar-RS").first().width();
+                var newleft = Number(left) + Number(width) / 2;
+                jQuery(".annotator-viewer").first().css({left: newleft + "px"});
 
-        jQuery(".annotator-viewer").first().css({left:newleft + "px"});
-        jQuery(".annotator-viewer").first().css({top:top});
+                var height = jQuery("#islandora_videojs_html5_api").height();
+                var top = height - 20;
+                jQuery(".annotator-viewer").first().css({top: top + "px"});
+            }
+        }
+
 
     });
 
